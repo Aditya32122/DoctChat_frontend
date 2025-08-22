@@ -58,6 +58,9 @@ const Login = () => {
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
                         Sign in to your account
                     </h2>
+                    <p className="mt-2 text-center text-sm/6 text-gray-500 dark:text-gray-400">
+                        It may take around 50 sec to login for the first time. Please wait patiently.
+                    </p>
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
