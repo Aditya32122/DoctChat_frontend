@@ -16,7 +16,7 @@ function App() {
         {/* <Navbar title="Smart Search" /> */}
         <div>
           <Routes>
-            <Route path="/" element={<Landing/>} />
+            <Route path="/" element={<Login/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
