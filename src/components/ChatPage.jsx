@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Send, LogOut, Trash2, Loader, MessageSquare, FileText } from 'lucide-react';
 
 const ChatPage = () => {
     const [messages, setMessages] = useState([]);
@@ -9,21 +10,17 @@ const ChatPage = () => {
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
-    // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Focus input on mount
     useEffect(() => {
         inputRef.current?.focus();
     }, []);
 
-    // Load current PDF info from localStorage or API
     useEffect(() => {
         const loadPdfInfo = async () => {
             try {
-                // You can modify this to fetch from your API
                 const pdfInfo = localStorage.getItem('currentPdf');
                 if (pdfInfo) {
                     setCurrentPdf(JSON.parse(pdfInfo));
@@ -56,16 +53,16 @@ const ChatPage = () => {
             const response = await fetch('https://doctchat-backend.onrender.com/api/query/', {
                 method: 'POST',
                 headers: {
-                        'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    query_text: inputMessage,  // Changed from 'message' to 'query_text'
-                    document: currentPdf?.id || null  // Changed from 'pdf_id' to 'document'
+                    query_text: inputMessage,
+                    document: currentPdf?.id || null
                 }),
             });
 
-               const data = await response.json();
+            const data = await response.json();
             console.log('Response data:', data);
 
             if (!response.ok) {
@@ -85,7 +82,7 @@ const ChatPage = () => {
         } catch (error) {
             console.error('Chat error:', error);
             setError(error.message || 'Failed to send message. Please try again.');
-            
+
             const errorMessage = {
                 id: Date.now() + 1,
                 text: 'Sorry, I encountered an error. Please try again.',
@@ -121,88 +118,101 @@ const ChatPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-            {/* Header */}
-            <div className="bg-white dark:bg-gray-800 shadow">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={goToDashboard}
-                                className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
-                            >
-                                ← Dashboard
-                            </button>
-                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                PDF Chat
-                            </h1>
-                            {currentPdf && (
-                                <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-900/20 dark:text-indigo-400">
-                                    {currentPdf.name}
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+            {/* Main Chat Area */}
+            <div className="flex flex-col w-full h-full">
+                {/* Header */}
+                <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={goToDashboard}
+                            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        
+                        {currentPdf ? (
+                            <div className="flex items-center gap-2">
+                                <FileText size={16} className="text-orange-500" />
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {currentPdf.title}
                                 </span>
-                            )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={clearChat}
-                                className="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 dark:bg-gray-500 dark:hover:bg-gray-400"
-                            >
-                                Clear Chat
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400"
-                            >
-                                Logout
-                            </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center">
+                                <span className="font-bold text-orange-500">DoctChat</span>
+                                <span className="mx-2 text-gray-300 dark:text-gray-600">|</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 italic">Smart document conversations</span>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={clearChat}
+                            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                            title="Clear conversation"
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                        
+                        <button
+                            onClick={handleLogout}
+                            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                            title="Log out"
+                        >
+                            <LogOut size={18} />
+                        </button>
+                    </div>
+                </header>
+
+                {/* Error banner */}
+                {error && (
+                    <div className="bg-red-50 dark:bg-red-900/20 px-4 py-3 border-b border-red-100 dark:border-red-800">
+                        <div className="text-sm text-red-700 dark:text-red-400">
+                            {error}
                         </div>
                     </div>
-                </div>
-            </div>
+                )}
 
-            {/* Error banner */}
-            {error && (
-                <div className="bg-red-50 border-l-4 border-red-400 p-4 dark:bg-red-900/20 dark:border-red-500">
-                    <div className="text-sm text-red-700 dark:text-red-400">
-                        {error}
-                    </div>
-                </div>
-            )}
-
-            {/* Chat messages area */}
-            <div className="flex-1 overflow-hidden">
-                <div className="h-full max-w-4xl mx-auto px-4 py-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full flex flex-col">
-                        {/* Messages container */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {messages.length === 0 ? (
-                                <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                                    <div className="text-lg mb-2">👋 Welcome to PDF Chat!</div>
-                                    <p>Ask me anything about your uploaded PDF document.</p>
-                                    {!currentPdf && (
-                                        <p className="text-sm mt-2">Upload a PDF from the dashboard to get started.</p>
-                                    )}
+                {/* Messages area */}
+                <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-800">
+                    <div className="max-w-3xl mx-auto px-4 py-6">
+                        {messages.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full space-y-4 py-16">
+                                <div className="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-full">
+                                    <MessageSquare size={32} className="text-orange-500 dark:text-orange-400" />
                                 </div>
-                            ) : (
-                                messages.map((message) => (
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                    Welcome to DoctChat
+                                </h3>
+                                <p className="text-center text-gray-500 dark:text-gray-400 max-w-md">
+                                    {currentPdf 
+                                        ? `Ask questions about "${currentPdf.title}" and I'll try to answer based on its content.`
+                                        : 'Your intelligent document assistant. Upload a document to start chatting with its content.'}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {messages.map((message) => (
                                     <div
                                         key={message.id}
                                         className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div
-                                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                                            className={`max-w-xl px-4 py-3 rounded-lg ${
                                                 message.sender === 'user'
-                                                    ? 'bg-indigo-600 text-white'
+                                                    ? 'bg-orange-600 text-white'
                                                     : message.isError
-                                                    ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                                                    : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
+                                                        ? 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                                        : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-200'
                                             }`}
                                         >
-                                            <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                                            <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
                                             <p
-                                                className={`text-xs mt-1 ${
+                                                className={`text-xs mt-2 ${
                                                     message.sender === 'user'
-                                                        ? 'text-indigo-200'
+                                                        ? 'text-orange-200'
                                                         : 'text-gray-500 dark:text-gray-400'
                                                 }`}
                                             >
@@ -210,53 +220,55 @@ const ChatPage = () => {
                                             </p>
                                         </div>
                                     </div>
-                                ))
-                            )}
+                                ))}
 
-                            {/* Typing indicator */}
-                            {isLoading && (
-                                <div className="flex justify-start">
-                                    <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2 max-w-xs">
-                                        <div className="flex space-x-1">
-                                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                {/* Typing indicator */}
+                                {isLoading && (
+                                    <div className="flex justify-start">
+                                        <div className="max-w-xl px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+                                            <div className="flex space-x-2 items-center">
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <div ref={messagesEndRef} />
-                        </div>
+                                <div ref={messagesEndRef} />
+                            </div>
+                        )}
+                    </div>
+                </div>
 
-                        {/* Input area */}
-                        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                            <form onSubmit={handleSendMessage} className="flex space-x-4">
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    value={inputMessage}
-                                    onChange={(e) => setInputMessage(e.target.value)}
-                                    placeholder="Ask a question about your PDF..."
-                                    disabled={isLoading}
-                                    className="flex-1 rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500 disabled:opacity-50"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={isLoading || !inputMessage.trim()}
-                                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isLoading ? (
-                                        <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    ) : (
-                                        'Send'
-                                    )}
-                                </button>
-                            </form>
-                        </div>
+                {/* Input area */}
+                <div className="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                    <div className="max-w-3xl mx-auto">
+                        <form onSubmit={handleSendMessage} className="relative">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={inputMessage}
+                                onChange={(e) => setInputMessage(e.target.value)}
+                                placeholder="Ask a question..."
+                                disabled={isLoading}
+                                className="w-full pr-12 py-3 pl-4 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-orange-400 text-gray-900 dark:text-gray-200 disabled:opacity-75"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isLoading || !inputMessage.trim()}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isLoading ? (
+                                    <Loader size={20} className="animate-spin" />
+                                ) : (
+                                    <Send size={20} />
+                                )}
+                            </button>
+                        </form>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
+                            {currentPdf ? `Chatting with: ${currentPdf.title}` : 'Upload a document from Dashboard to get more accurate answers'}
+                        </p>
                     </div>
                 </div>
             </div>
