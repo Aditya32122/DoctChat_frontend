@@ -179,13 +179,19 @@ const Landing = () => {
                 </button>
               ) : (
                 <>
-                  <button 
-                    onClick={() => handleNavigate('/signup')}
-                    className="group bg-orange-600 dark:bg-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-500 dark:hover:bg-orange-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center"
-                  >
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
+                  <button
+                  onClick={() => {
+                    const token = localStorage.getItem('token'); 
+                    if (token) {
+                      handleNavigate('/dashboard');
+                    } else {
+                      handleNavigate('/login');
+                    }
+                  }}
+                  className="group bg-orange-600 dark:bg-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-500 dark:hover:bg-orange-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center"
+                >
+                  Get Started
+                </button>
                   <button 
                     onClick={() => handleNavigate('/demo')}
                     className="border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:border-orange-500 dark:hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-400 transition-all duration-300 transform hover:scale-105 inline-flex items-center"
