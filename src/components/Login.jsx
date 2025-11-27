@@ -25,6 +25,11 @@ const Login = () => {
 
             const data = await response.json();
 
+            if (data.error){
+                throw new Error(data.error);
+            }
+            console.log('Response data:', data);
+
             if (!response.ok) {
                 throw new Error(data.detail || 'Login failed');
             }
@@ -100,6 +105,7 @@ const Login = () => {
                                 <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
                                     Password
                                 </label>
+                               
                                 <div className="text-sm">
                                     <a
                                         href="#"
@@ -131,6 +137,15 @@ const Login = () => {
                                 className="flex w-full justify-center rounded-md bg-orange-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 dark:bg-orange-500 dark:shadow-none dark:hover:bg-orange-400 dark:focus-visible:outline-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? 'Signing in...' : 'Sign in'}
+                            </button>
+                            <button type="button"
+                                onClick={() => {
+                                    setUsername('testuser');
+                                    setPassword('testpassword');
+                                }}
+                                className="mt-2 flex w-full justify-center rounded-md bg-gray-200 px-3 py-1.5 text-sm/6 font-semibold text-gray-900 shadow-xs hover:bg-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 dark:bg-gray-700 dark:text-gray-100 dark:shadow-none dark:hover:bg-gray-600 dark:focus-visible:outline-gray-500"
+                            >
+                                Fill Test Credentials
                             </button>
                         </div>
                     </form>
