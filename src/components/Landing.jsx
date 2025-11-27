@@ -283,7 +283,7 @@ const Landing = () => {
               { step: "3", title: "Get Intelligent Answers", description: "Receive accurate, contextual responses with source citations", icon: Brain }
             ].map((item, index) => (
               <div key={index} className="text-center group">
-                <div className="relative mb-8">
+                <div className="relative mb-8 mx-auto w-24 h-24 border-4 border-white rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300">
                   <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <item.icon className="w-10 h-10 text-white" />
                   </div>
